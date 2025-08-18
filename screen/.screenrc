@@ -1,0 +1,44 @@
+# ==== General settings ====
+startup_message off           # Disable welcome message
+defscrollback 10000           # Scrollback buffer
+vbell on                      # Enable visual bell
+defutf8 on                    # UTF-8 support
+
+term screen-256color
+shell -/usr/local/bin/bash
+
+# ==== Escape key ====
+# Change the default Ctrl+a to Ctrl+b (pick one and comment out others)
+escape ^Bb
+#escape ^Ff
+
+# ==== Status bar ====
+# Window list at the bottom, with clock
+caption always "%{= kw}%-w%{= BW}%n %t%{-}%+w %=%{gk}%Y-%m-%d %c"
+
+# Alternatively, use this for a Powerline-style look:
+# hardstatus alwayslastline
+# hardstatus string '%{= gk}[%H]%{= kw} %=%{= gC}%Y-%m-%d %c '
+
+# ==== Key bindings ====
+bindkey ^R source ~/.screenrc  # Reload config with Ctrl+R
+# Optional: split screen shortcuts (like tmux)
+bind | split -v                # Vertical split
+bind - split -h                # Horizontal split
+bind TAB focus                 # Switch focus to next region
+bind h focus                   # Left
+bind j focus                   # Down
+bind k focus                   # Up
+bind l focus                   # Right
+
+# ==== Predefined windows ====
+# screen -t shell0 0 bash
+# screen -t shell1 1 bash
+
+# ==== Colors ====
+termcapinfo xterm*|rxvt*|kterm*|Eterm* AX:hs:ts=\E]2;:fs=\007:ds=\E]2;screen\007
+shelltitle "$ |bash"
+
+# ==== Mouse support ====
+mousetrack on
+

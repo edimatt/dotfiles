@@ -202,6 +202,16 @@
 (setq python-shell-interpreter "ipython"
       python-shell-interpreter-args "-i --simple-prompt")
 
+;; Virtual environments
+(use-package virtualenvwrapper
+  :ensure t
+  :init
+  (setq venv-location (getenv "WORKON_HOME")) ;; usually ~/.virtualenvs
+  :config
+  (venv-initialize-interactive-shells) ;; if you use M-x shell
+  (venv-initialize-eshell)             ;; if you use eshell
+)
+
 ;; ---------------------------------------
 ;; Go IDE: gopls + goimports
 ;; ---------------------------------------
@@ -233,6 +243,10 @@
               ("TAB" . copilot-accept-completion)
               ("C-TAB" . copilot-accept-completion-by-word)))
 
+(use-package crontab-mode
+  :ensure t
+  :mode ("crontab\\'" . crontab-mode))
+
 ;; ---------------------------------------
 ;; C++ IDE (clangd assumed)
 ;; ---------------------------------------
@@ -245,7 +259,6 @@
  ;; If there is more than one, they won't work right.
  '(flycheck-clang-language-standard "c++2b")
  '(flycheck-gcc-language-standard "c++2b")
- '(helm-minibuffer-history-key "M-p")
  '(inhibit-startup-screen t)
  '(initial-scratch-message nil)
  '(package-selected-packages nil))
