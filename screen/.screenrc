@@ -1,44 +1,107 @@
-# ==== General settings ====
-startup_message off           # Disable welcome message
-defscrollback 10000           # Scrollback buffer
-vbell on                      # Enable visual bell
-defutf8 on                    # UTF-8 support
-
-term screen-256color
-shell -/usr/local/bin/bash
-
-# ==== Escape key ====
-# Change the default Ctrl+a to Ctrl+b (pick one and comment out others)
-escape ^Bb
-#escape ^Ff
-
-# ==== Status bar ====
-# Window list at the bottom, with clock
-caption always "%{= kw}%-w%{= BW}%n %t%{-}%+w %=%{gk}%Y-%m-%d %c"
-
-# Alternatively, use this for a Powerline-style look:
-# hardstatus alwayslastline
-# hardstatus string '%{= gk}[%H]%{= kw} %=%{= gC}%Y-%m-%d %c '
-
-# ==== Key bindings ====
-bindkey ^R source ~/.screenrc  # Reload config with Ctrl+R
-# Optional: split screen shortcuts (like tmux)
-bind | split -v                # Vertical split
-bind - split -h                # Horizontal split
-bind TAB focus                 # Switch focus to next region
-bind h focus                   # Left
-bind j focus                   # Down
-bind k focus                   # Up
-bind l focus                   # Right
-
-# ==== Predefined windows ====
-# screen -t shell0 0 bash
-# screen -t shell1 1 bash
-
-# ==== Colors ====
-termcapinfo xterm*|rxvt*|kterm*|Eterm* AX:hs:ts=\E]2;:fs=\007:ds=\E]2;screen\007
+startup_message off
+#
+# Autodetach session on hangup instead of terminating screen completely.
+#
+autodetach on
+defshell -bash
 shelltitle "$ |bash"
+#
+# Prevent vi(1) / vim(1) from messing up the scrollback.
+#
+altscreen on
+defscrollback 30000
+vbell off
 
-# ==== Mouse support ====
-mousetrack on
+bind  ! select 11
+bind  @ select 12
+bind \# select 13
+bind  $ select 14
+bind  % select 15
+bind \^ select 16
+bind  & select 17
+bind  * select 18
+bind  ( select 19
+bind  ) select 10
 
+# Emacs like binding. Comment this section if using emacs!
+# escape x
+# bind b windowlist
+# bind o focus
+# bind 0 remove
+# bind 1 only
+# bind 2 split
+# bind 3 split -v
+# bind n next
+# bind p prev
+# bind k kill
+# bind  screen -t find-file bash -lc 'read -e -p "Find file: " f; [ -n "$f" ] && ${EDITOR:-vim} "$f"'
+
+# --- Make screen behave like tmux -----------------------------
+# Usa C-b come prefix (tmux-style) invece del default C-a
+escape ^Bb
+
+# Nuova finestra / rinomina / chiudi finestra (tmux: c , &)
+bind c screen
+bind , title
+bind & kill
+
+# Split pane (tmux: % = split-verticale | " = split-orizzontale)
+# In screen: split -v = verticale (colonne), split = orizzontale (righe)
+bind % split -v
+bind \" split
+
+# Focus pane (tmux: o) / "zoom" (approssimato con only)
+bind o focus
+bind z only
+
+# Chiudi pane (tmux: x) / Solo questo pane (tmux zoom-like)
+bind x remove
+bind 1 only
+
+# Navigazione fra pane con frecce (prefix + freccia) – screen 4.6+
+bind -k ku focus up
+bind -k kd focus down
+bind -k kl focus left
+bind -k kr focus right
+
+# Passa all’ultimo pane (tmux: ;) – usiamo 'other' come approssimazione
+bind \; other
+
+# Lista finestre (tmux: w) e next/prev (tmux: n/p)
+bind w windowlist -b
+bind n next
+bind p prev
+
+# Selezione diretta finestre (tmux: 0..9)
+bind 0 select 0
+bind 1 select 1
+bind 2 select 2
+bind 3 select 3
+bind 4 select 4
+bind 5 select 5
+bind 6 select 6
+bind 7 select 7
+bind 8 select 8
+bind 9 select 9
+
+# Prompt comandi (tmux: :)
+bind : colon
+
+# Copy-mode / paste (tmux: [ ])
+bind [ copy
+bind ] paste .
+
+# Detach (tmux: d)
+bind d detach
+
+# Help (tmux: ?)
+bind ? help
+
+# ----------------------------------------------------------------
+# (Opzionale) status bar stile tmux (caption in basso)
+caption always "%{= kw}%H #[fg=white]%{= kW}%n %t %=%Y-%m-%d %c"
+hardstatus off
+
+
+# hardstatus alwayslastline
+# hardstatus string '%{= kG}[%{W}%H %l%{g}]%= %{= kw}%?%-Lw%?%{r}[%{W}%n*%f%t%?(%u)%?%{r}]%{w}%?%+Lw%?%?%= %{g}[%{W}%d.%m. %c%{g}]'
