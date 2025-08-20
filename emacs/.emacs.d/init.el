@@ -75,17 +75,6 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
-
-;;(use-package copilot
- ;; :ensure t
-  ;;:defer t
-  ;;:hook (prog-mode . copilot-mode)
- ;; :bind (:map copilot-completion-map
- ;;             ("<tab>" . copilot-accept-completion)
- ;;             ("TAB" . copilot-accept-completion)
- ;;             ("C-TAB" . copilot-accept-completion-by-word)))
-
-
 ;; 📦 Vertico: completamento verticale minimal
 (use-package vertico
   :ensure t
@@ -150,9 +139,13 @@
 
 ;; Magit for Git
 (use-package magit
+  :ensure t
   :defer t
-  :init
-  (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+  :commands (magit-status magit-dispatch)
+  :config
+  (setq magit-display-buffer-function
+        #'magit-display-buffer-same-window-except-diff-v1))
+
 
 ;; Async support for Magit and others
 (use-package async
@@ -212,6 +205,22 @@
   (venv-initialize-eshell)             ;; if you use eshell
 )
 
+;; ---------
+;; Lisp IDE
+;; ---------
+;; SLY (Common Lisp IDE for Emacs)
+(setq inferior-lisp-program
+      (or (executable-find "sbcl")
+          "/usr/local/bin/sbcl")) ; Intel Homebrew default; change if needed
+
+(setq sly-use-slynk-bundled 'always)
+
+(use-package sly
+  :ensure t
+  :defer t
+  :hook (sly-connected . sly-mrepl))
+
+
 ;; ---------------------------------------
 ;; Go IDE: gopls + goimports
 ;; ---------------------------------------
@@ -261,7 +270,8 @@
  '(flycheck-gcc-language-standard "c++2b")
  '(inhibit-startup-screen t)
  '(initial-scratch-message nil)
- '(package-selected-packages nil))
+ '(package-selected-packages nil)
+ '(scroll-step 1))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

@@ -27,7 +27,7 @@ do
 done
 
 # --- Aliases ---
-alias ll='ls -lh --color=auto'
+alias ll='ls -lrth --color=auto'
 alias la='ls -A'
 alias l='ls -CF'
 alias grep='grep --color=auto'
@@ -43,32 +43,8 @@ alias gp='git push'
 
 # --- Handy functions ---
 mkcd() { mkdir -p "$1" && cd "$1"; }
-cd() { builtin cd "$@" && ls -F --color=auto; }
-
-extract () {
-  if [ $# -lt 1 ]; then
-    echo "Usage: extract <archive> [...more archives]"
-    return 2
-  fi
-
-  for f in "$@"; do
-    [ -f "$f" ] || { echo "extract: '$f' not found"; continue; }
-    case "${f,,}" in
-      *.tar.bz2|*.tbz2)   tar xjf "$f"   ;;
-      *.tar.gz|*.tgz)     tar xzf "$f"   ;;
-      *.tar.xz|*.txz)     tar xJf "$f"   ;;   # ← xz-compressed tar
-      *.tar)              tar xf "$f"    ;;
-      *.bz2)              bunzip2 "$f"   ;;
-      *.gz)               gunzip "$f"    ;;
-      *.xz)               xz -d "$f"     ;;   # ← raw .xz
-      *.zip)              unzip "$f"     ;;
-      *.7z)               7z x "$f"      ;;
-      *.rar)              unrar x "$f"   ;;
-      *.Z)                uncompress "$f";;
-      *)                  echo "extract: '$f' cannot be extracted" ;;
-    esac
-  done
-}
+# cd() { builtin cd "$@" && ls -F --color=auto; }
+serve() { python3 -m http.server "${1:-8000}"; }
 
 if command -v fzf >/dev/null; then
   export FZF_DEFAULT_OPTS="--height=40% --reverse --border"
@@ -81,10 +57,11 @@ if command -v fzf >/dev/null; then
     fi
   }
 
-  bind -x '"\C-r": fzf-history'
+  bind -x '"\C-t": fzf-history'
 fi
 
-serve() { python3 -m http.server "${1:-8000}"; }
+# --- PATH tweaks before sourcing scripts in .bashrc.d! ---
+export PATH="$HOME/.local/bin:$PATH"
 
 if [ -d ~/.bashrc.d ]; then
   for rc in ~/.bashrc.d/*; do
@@ -93,6 +70,3 @@ if [ -d ~/.bashrc.d ]; then
     fi
   done
 fi
-
-# --- PATH tweaks ---
-export PATH="$HOME/.local/bin:$PATH"
