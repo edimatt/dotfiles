@@ -38,7 +38,7 @@ bind  ) select 10
 
 # --- Make screen behave like tmux -----------------------------
 # Usa C-b come prefix (tmux-style) invece del default C-a
-escape ^Bb
+escape b
 
 # Nuova finestra / rinomina / chiudi finestra (tmux: c , &)
 bind c screen

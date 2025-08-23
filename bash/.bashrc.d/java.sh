@@ -5,5 +5,4 @@ if [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]; then
 fi
 
 # export JAVA_HOME=/usr/lib/jvm/java
-
-export PATH=$PATH:$HOME/Applications/jdt_js/bin
+add_to_path 1 $HOME/Applications/jdt_js/bin

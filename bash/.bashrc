@@ -60,8 +60,56 @@ if command -v fzf >/dev/null; then
   bind -x '"\C-t": fzf-history'
 fi
 
+# usage:
+#   add_to_path DIR...          # prepend (default)
+#   add_to_path 0 DIR...        # prepend
+#   add_to_path 1 DIR...        # append
+add_to_path() {
+  # no args?
+  if [ $# -eq 0 ]; then
+    printf 'usage: add_to_path [0|1] DIR...\n' >&2
+    return 2
+  fi
+
+  # parse mode
+  local mode=0
+  if [ $# -ge 2 ] && { [ "$1" = "0" ] || [ "$1" = "1" ]; }; then
+    mode="$1"; shift
+  fi
+
+  # need at least one DIR
+  [ $# -ge 1 ] || { printf 'add_to_path: need at least one DIR\n' >&2; return 2; }
+
+  local dir prefix=""
+
+  if [ "$mode" = "1" ]; then
+    # append: keep given order
+    for dir in "$@"; do
+      [ -n "$dir" ] || continue
+      case ":$PATH:" in
+        *":$dir:"*) : ;;                 # already there
+        *) PATH="${PATH:+$PATH:}$dir" ;;
+      esac
+    done
+  else
+    # prepend: keep given order (build prefix, then stick in front)
+    for dir in "$@"; do
+      [ -d "$dir" ] || continue
+      case ":$prefix:$PATH:" in
+        *":$dir:"*) : ;;                 # skip duplicates (incl. within prefix)
+        *) prefix="${prefix:+$prefix:}$dir" ;;
+      esac
+    done
+    PATH="${prefix}${PATH:+:$PATH}"
+  fi
+
+  export PATH
+}
+
+export -f add_to_path
+
 # --- PATH tweaks before sourcing scripts in .bashrc.d! ---
-export PATH="$HOME/.local/bin:$PATH"
+add_to_path 0 "$HOME/.local/bin"
 
 if [ -d ~/.bashrc.d ]; then
   for rc in ~/.bashrc.d/*; do

@@ -220,6 +220,10 @@
   :defer t
   :hook (sly-connected . sly-mrepl))
 
+;; Epub reader.
+(use-package nov
+  :ensure t
+  :mode ("\\.epub\\'" . nov-mode))
 
 ;; ---------------------------------------
 ;; Go IDE: gopls + goimports
