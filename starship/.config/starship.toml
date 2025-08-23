@@ -1,0 +1,5 @@
+[hostname]
+ssh_only = false        # mostra anche in locale
+format = "[$hostname]($style) "  # opzionale, con spazio finale
+disabled = false
+trim_at = "."           # "MacBook-Pro.local" -> "MacBook-Pro"

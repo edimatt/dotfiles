@@ -1,0 +1,28 @@
+[user]
+	name = edimatt
+	email = edoardo.dimatteo@gmail.com
+[color]
+    ui = auto
+	branch = auto
+	diff = auto
+	status = auto
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+[core]
+    editor = emacs
+    excludesfile = ~/.gitignore_global
+[alias]
+    st = status -sb
+    co = checkout
+    lg = log --oneline --graph --decorate -n 30
