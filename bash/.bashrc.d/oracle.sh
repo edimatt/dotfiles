@@ -15,3 +15,11 @@ fi
 if command -v sqlplus >/dev/null 2>&1 && command -v rlwrap >/dev/null 2>&1; then
   alias sqlplus="rlwrap sqlplus"
 fi
+
+# Add sqlcl client
+for sqlcl in \
+  "$HOME/Applications/sqlcl/bin" \
+  "/usr/local/Caskroom/sqlcl"/*/sqlcl/bin
+do
+  [ -d "$sqlcl" ] && add_to_path 1 "$sqlcl"
+done

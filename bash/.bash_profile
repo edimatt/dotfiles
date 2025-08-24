@@ -6,9 +6,6 @@
 
 # User specific environment and startup programs
 
-# Oracle
-export PATH=$PATH:$HOME/Applications/sqlcl/bin
-
 # Emacs
 export WORKON_HOME=$HOME/Applications/miniforge3/envs
 
