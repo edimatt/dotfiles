@@ -1,9 +1,9 @@
 # .bash_profile
 
 # Get the aliases and functions
-if [ -f ~/.bashrc ]; then
-	. ~/.bashrc
-fi
+[ -f ~/.profile ] && source ~/.profile
+[ -f ~/.bashrc ] && source ~/.bashrc
+
 # User specific environment and startup programs
 
 # Oracle
