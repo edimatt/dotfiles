@@ -16,6 +16,16 @@
 (setq use-package-always-ensure t   ;; Automatically install missing packages
       use-package-always-defer t)   ;; Defer loading by default for faster startup
 
+;; Make sure Emacs daemon (via launchd) sees Homebrew's node
+(when (eq system-type 'darwin)
+  (let ((brew-bin
+         (cond
+          ((file-directory-p "/opt/homebrew/bin") "/opt/homebrew/bin") ; Apple Silicon
+          ((file-directory-p "/usr/local/bin")   "/usr/local/bin"))))  ; Intel
+    (when brew-bin
+      (setenv "PATH" (concat brew-bin ":" (getenv "PATH")))
+      (add-to-list 'exec-path brew-bin))))
+
 ;; ---------------------------------------
 ;; UI enhancements and core packages
 ;; ---------------------------------------
@@ -57,9 +67,28 @@
   :init
   (which-key-mode 1))
 
-;; Better modeline
+;; --- Nerd Icons ---
+(use-package nerd-icons
+  :ensure t
+  :config
+  ;; installa i font automaticamente se non li trova
+  (unless (member "Symbols Nerd Font Mono" (font-family-list))
+    (ignore-errors (nerd-icons-install-fonts t))))
+
+;; --- Doom Modeline ---
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode))
+  :ensure t
+  :hook (after-init . doom-modeline-mode)
+  :init
+  ;; alza un po' l'altezza della modeline
+  (setq doom-modeline-height 25
+        doom-modeline-bar-width 3
+        doom-modeline-buffer-file-name-style 'truncate-with-project
+        doom-modeline-icon t
+        doom-modeline-major-mode-icon t
+        doom-modeline-minor-modes nil
+        doom-modeline-enable-word-count t
+        doom-modeline-env-enable-python t))
 
 ;; Tema per Doom Emacs
 (use-package doom-themes
@@ -250,6 +279,15 @@
 (use-package copilot
   :ensure t
   :defer t
+  :init
+  ;; (setq copilot-node-executable "/opt/homebrew/bin/node")
+  ;; mute Copilot warnings
+  (add-to-list 'warning-suppress-types '(copilot))
+  :config
+  ;; if Copilot can't infer indent, return 2 instead of warning
+  (advice-add 'copilot--infer-indentation-offset :around
+              (lambda (orig &rest args)
+                (or (ignore-errors (apply orig args)) 2)))
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
               ("<tab>" . copilot-accept-completion)
