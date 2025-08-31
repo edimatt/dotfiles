@@ -4,6 +4,7 @@ decorations = "transparent"   # hides the window frame for max transparency
 opacity = 0.90                # 0.0 fully transparent → 1.0 solid
 dynamic_title = true
 blur = true                   # macOS only
+option_as_alt = "OnlyLeft"    # Emacs fix. Use left option for M-x, right option for #, [ etc...
 
 [font]
 normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
@@ -54,3 +55,11 @@ bindings = [
   { key = "V", mods = "Command", action = "Paste" },
   { key = "C", mods = "Command", action = "Copy" }
 ]
+
+[env]
+PATH = "/usr/local/bin:/opt/homebrew/bin:/opt/homebrew/sbin"
+
+# ~/.alacritty.toml
+[terminal.shell]
+program = "/usr/bin/env"
+args = ["tmux", "new-session", "-A", "-s", "main"]

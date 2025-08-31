@@ -5,7 +5,9 @@
 ;;; Code:
 (require 'package)
 (setq package-enable-at-startup nil)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(setq package-archives
+      '(("gnu"   . "https://elpa.gnu.org/packages/")
+        ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -16,26 +18,32 @@
 (setq use-package-always-ensure t   ;; Automatically install missing packages
       use-package-always-defer t)   ;; Defer loading by default for faster startup
 
-;; Make sure Emacs daemon (via launchd) sees Homebrew's node
-(when (eq system-type 'darwin)
-  (let ((brew-bin
-         (cond
-          ((file-directory-p "/opt/homebrew/bin") "/opt/homebrew/bin") ; Apple Silicon
-          ((file-directory-p "/usr/local/bin")   "/usr/local/bin"))))  ; Intel
-    (when brew-bin
-      (setenv "PATH" (concat brew-bin ":" (getenv "PATH")))
-      (add-to-list 'exec-path brew-bin))))
+;; Make sure Emacs daemon (via launchd) sees Homebrew's node by importing PATH
+(use-package exec-path-from-shell
+  :init
+  ;; Questo importa PATH + MANPATH e aggiorna exec-path
+  (exec-path-from-shell-initialize)
+
+  ;; Questo importa solo altre variabili
+  (exec-path-from-shell-copy-envs
+   '("WORKON_HOME" "PYENV_ROOT" "NPM_CONFIG_PREFIX" "LANG" "LC_ALL")))
 
 ;; ---------------------------------------
 ;; UI enhancements and core packages
 ;; ---------------------------------------
 
-;; Company for auto-completion
+;; Company for auto completion
 (use-package company
   :hook (after-init . global-company-mode)
   :config
   (setq company-minimum-prefix-length 1
-        company-idle-delay 0.0))
+        company-idle-delay 0.0)
+  ;; Fix TAB conflict with Copilot: use C-n/C-p instead
+  (define-key company-active-map (kbd "TAB") nil)
+  (define-key company-active-map (kbd "<tab>") nil)
+  (define-key company-active-map (kbd "C-n") #'company-select-next)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous))
+
 
 ;; Flycheck for diagnostics
 (use-package flycheck
@@ -200,9 +208,11 @@
 ;; Python IDE: Pyright + Black
 ;; ---------------------------------------
 
-;; Add pyright to PATH if needed
-(setenv "PATH" (concat (getenv "PATH") ":~/.npm/bin"))
-(add-to-list 'exec-path "~/.npm/bin")
+;; Add pyright to PATH if installed via npm
+(let ((npm-bin (expand-file-name "~/.npm/bin")))
+  (setenv "PATH" (concat (getenv "PATH") ":" npm-bin))
+  (add-to-list 'exec-path npm-bin))
+
 
 ;; Pyright for Python LSP
 (use-package lsp-pyright
@@ -276,6 +286,8 @@
   (define-key go-mode-map (kbd "C-c C-d") 'lsp-describe-thing-at-point)
   (define-key go-mode-map (kbd "C-c C-f") 'gofmt))
 
+
+;; Copilot AI code completion
 (use-package copilot
   :ensure t
   :defer t
@@ -294,9 +306,35 @@
               ("TAB" . copilot-accept-completion)
               ("C-TAB" . copilot-accept-completion-by-word)))
 
+
+;; Crontab mode for editing cron jobs
 (use-package crontab-mode
   :ensure t
   :mode ("crontab\\'" . crontab-mode))
+
+
+;; Systemd mode for editing systemd unit files (Linux only)
+(when (eq system-type 'gnu/linux)
+  (use-package systemd
+    :ensure t
+    :mode (("\\.service\\'" . systemd-mode)
+           ("\\.socket\\'"  . systemd-mode)
+           ("\\.target\\'"  . systemd-mode))))
+
+
+;; ---------------------------------------
+;; Performance tweaks
+;; ---------------------------------------
+(setq read-process-output-max (* 4 1024 1024) ;; 4mb
+      gc-cons-threshold (* 64 1024 1024)
+      lsp-idle-delay 0.2
+      lsp-log-io nil
+      lsp-file-watch-threshold 2000)
+
+(use-package gcmh
+  :init
+  (gcmh-mode 1))
+
 
 ;; ---------------------------------------
 ;; C++ IDE (clangd assumed)
@@ -312,8 +350,14 @@
  '(flycheck-gcc-language-standard "c++2b")
  '(inhibit-startup-screen t)
  '(initial-scratch-message nil)
- '(package-selected-packages nil)
- '(scroll-step 1))
+ '(package-selected-packages
+   '(async blacken company copilot crontab-mode doom-modeline doom-themes
+	   embark-consult evil-collection exec-path-from-shell
+	   flycheck gcmh go-mode lsp-pyright lsp-ui magit marginalia
+	   no-littering nov orderless projectile sly systemd vertico
+	   virtualenvwrapper))
+ '(scroll-step 1)
+ '(warning-suppress-types '((native-compiler) (copilot))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -324,7 +368,14 @@
 
 ;; Disable menu bar
 (menu-bar-mode -1)
-(which-key-mode t)
+(save-place-mode 1)
+(savehist-mode 1)
+(recentf-mode 1)
+(global-display-line-numbers-mode 1)
+(electric-pair-mode 1)
+(show-paren-mode 1)
+(delete-selection-mode 1)
+(prefer-coding-system 'utf-8)
 
 (provide 'init)
 ;;; init.el ends here
