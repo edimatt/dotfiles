@@ -10,7 +10,11 @@ if [ -f /etc/bashrc ]; then
 fi
 
 # --- Environment ---
-export EDITOR="emacs"
+if emacsclient -e "(emacs-pid)" >/dev/null 2>&1; then
+    export EDITOR="emacsclient"
+else
+    export EDITOR=vim
+fi
 export PAGER="less -FRX"
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
@@ -114,7 +118,8 @@ add_to_path 0 "$HOME/.local/bin"
 if [ -d ~/.bashrc.d ]; then
   for rc in ~/.bashrc.d/*; do
     if [ -x "$rc" ]; then
-      source "$rc"  # W: ShellCheck can't follow non-constant source. Use a directive to specify location.
+      # shellcheck source=/dev/null
+      . "$rc"
     fi
   done
 fi

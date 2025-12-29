@@ -350,12 +350,7 @@
  '(flycheck-gcc-language-standard "c++2b")
  '(inhibit-startup-screen t)
  '(initial-scratch-message nil)
- '(package-selected-packages
-   '(async blacken company copilot crontab-mode doom-modeline doom-themes
-	   embark-consult evil-collection exec-path-from-shell
-	   flycheck gcmh go-mode lsp-pyright lsp-ui magit marginalia
-	   no-littering nov orderless projectile sly systemd vertico
-	   virtualenvwrapper))
+ '(package-selected-packages nil)
  '(scroll-step 1)
  '(warning-suppress-types '((native-compiler) (copilot))))
 

@@ -9,7 +9,4 @@
 # Emacs
 export WORKON_HOME=$HOME/Applications/miniforge3/envs
 
-# Kotlin language server
-export PATH=$PATH:$HOME/Applications/kls/bin
-
 fortune
